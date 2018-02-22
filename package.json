@@ -1,0 +1,19 @@
+{
+  "name": "luckydaygaming-cms",
+  "version": "1.0.0",
+  "description": ":)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/keystone.js",
+    "dev": "node ./node_modules/.bin/nodemon src/keystone.js"
+  },
+  "author": "Ryan Haskell-Glatz",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.15.1"
+  },
+  "dependencies": {
+    "keystone": "^4.0.0-beta.8",
+    "keystone-singleton": "git://github.com/onenorth/keystone-singleton.git#1.0.1"
+  }
+}
