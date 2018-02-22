@@ -17,6 +17,8 @@ keystone.init({
   'name': config.name,
   'brand': config.name,
   'mongo': config.mongo,
+  'session store': 'connect-mongo',
+  'session store options': { cookie: { maxAge: 36000000 } },
   'auth': true,
   'user model': 'User',
   'cookie secret': config.secret,
