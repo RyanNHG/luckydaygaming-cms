@@ -1,5 +1,6 @@
 module.exports = (app) => {
   // API
+  app.get('/api/layouts/default', require('./layouts/default'))
   app.get('/api/pages/home', require('./pages/home'))
 
   // Not Found
