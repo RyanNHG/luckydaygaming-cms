@@ -1,5 +1,6 @@
 const keystone = require('keystone')
 const singleton = require('keystone-singleton')
+const { sluggify } = require('./utils')
 
 // Plugins
 singleton.init({ keystone })
@@ -10,7 +11,8 @@ const config = {
   secret: process.env.COOKIE_SECRET || 'secret',
   mongo: process.env.MONGO_URI || 'mongodb://localhost/lucky-day-gaming',
   autoUpdate: process.env.NODE_ENV !== 'production',
-  port: process.env.PORT || 3000
+  port: process.env.PORT || 3000,
+  cloudinaryUrl: process.env.CLOUDINARY_URL || 'cloudinary://api_key:api_secret@cloud_name'
 }
 
 keystone.init({
@@ -23,11 +25,16 @@ keystone.init({
   'user model': 'User',
   'cookie secret': config.secret,
   'auto update': config.autoUpdate,
-  'port': config.port
+  'port': config.port,
+  'cloudinary config': config.cloudinaryUrl,
+  'cloudinary prefix': sluggify(config.name),
+  'cloudinary folders': true,
+  'cloudinary secure': true
 })
 
 // Models
 keystone.import('models')
+keystone.set('nav', require('./models/_nav'))
 
 // Routes
 keystone.set('routes', require('./routes'))

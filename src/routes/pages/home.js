@@ -1,50 +1,54 @@
-module.exports = (req, res, next) =>
-  Promise.resolve({
-    hero: {
-      header: 'Our Mission',
-      intro: '<p>Lucky Day Gaming has the highest quality of service and games in the video gaming industry. As a Licensed Terminal Operator, we strive to offer the best for our clients.</p>',
-      taunt: `Let's get lucky`,
-      image: {
-        url: '/images/home/hero.jpg',
-        alt: 'A slot machine violently explodes with luck.'
-      }
-    },
-    topSection: {
-      image: {
-        url: '/images/home/slot-machines.png',
-        alt: 'A trio of slot machines.'
-      },
-      header: 'Partnerships',
-      description: '<p>We pride ourselves on delivering the best machines to our customers. Lucky Day Gaming works with and has maintained a long-standing relationship with with Bally, IGT™, WMS, and Spielo™.</p>',
-      cta: {
-        label: 'Learn more',
-        url: '/partnerships'
-      }
-    },
-    middleSection: {
-      image: {
-        url: '/images/home/pie-chart.png',
-        alt: 'A trio of slot machines.'
-      },
-      header: 'About Gaming',
-      description: '<p>In the Illinois video gaming market, compliance is key if you want to hold on to your gaming license. Ensuring you stay compliant means understanding a robust legal landscape AND keeping up with changes in the market.</p>',
-      cta: {
-        label: 'Learn more',
-        url: '/about-gaming'
-      }
-    },
-    bottomSection: {
-      image: {
-        url: '/images/home/gold-pile.png',
-        alt: 'A trio of slot machines.'
-      },
-      header: 'Legal Notice',
-      description: '<p>Lucky Day Gaming is a Terminal Operator licensed by the Illinois Gaming Board who strategically places slot machines and amusements in  establishments throughout Illinois.</p>',
-      cta: {
-        label: 'Learn more',
-        url: '/faqs'
-      }
-    }
+const keystone = require('keystone')
+
+const image = (url, alt) =>
+  ({ url, alt })
+
+const section = ({ item, prefix, image: imageUrl, url }) => ({
+  image: image(imageUrl, item[`${prefix}ImageAltText`]),
+  header: item[`${prefix}Header`],
+  description: item[`${prefix}Description`],
+  cta: {
+    label: item[`${prefix}Cta`],
+    url
+  }
+})
+
+const transform = (item) => ({
+  hero: {
+    header: item.heroHeader,
+    intro: item.heroIntro,
+    cta: item.heroCta,
+    image: image('/images/home/hero.jpg', 'A slot machine violently explodes with luck.')
+  },
+  topSection: section({
+    item,
+    prefix: 'partnershipsSection',
+    url: '/partnerships',
+    image: '/images/home/slot-machines.png'
+  }),
+  middleSection: section({
+    item,
+    prefix: 'aboutSection',
+    url: '/about-gaming',
+    image: '/images/home/pie-chart.png'
+  }),
+  bottomSection: section({
+    item,
+    prefix: 'legalSection',
+    image: '/images/home/gold-pile.png',
+    url: '/faqs'
   })
-  .then(data => res.json(data))
-  .catch(reason => next(reason))
+})
+
+const getHomepage = () =>
+  keystone.list('Homepage').model
+    .findOne()
+    .lean()
+    .exec()
+    .then(transform)
+    .catch(Promise.reject)
+
+module.exports = (req, res, next) =>
+  getHomepage()
+    .then(data => res.json(data))
+    .catch(reason => next(reason))

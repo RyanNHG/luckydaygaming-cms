@@ -48,7 +48,8 @@ module.exports = (req, res, next) =>
           { label: 'Contact Us', url: '/contact-us' },
           { label: 'FAQs', url: '/faqs' }
         ]
-      }
+      },
+      menuLabel: 'Menu'
     },
     footer: {
       logo: {
