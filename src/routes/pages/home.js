@@ -18,7 +18,7 @@ const transform = (item) => ({
     header: item.heroHeader,
     intro: item.heroIntro,
     cta: item.heroCta,
-    image: image('/images/home/hero.jpg', 'A slot machine violently explodes with luck.')
+    image: image('/images/home/hero.jpg', item.heroImageAltText)
   },
   topSection: section({
     item,
