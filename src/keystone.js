@@ -10,7 +10,7 @@ const config = {
   name: 'Lucky Day Gaming',
   secret: process.env.COOKIE_SECRET || 'secret',
   mongo: process.env.MONGO_URI || 'mongodb://localhost/lucky-day-gaming',
-  autoUpdate: process.env.NODE_ENV !== 'production',
+  autoUpdate: true, // process.env.NODE_ENV !== 'production',
   port: process.env.PORT || 3000,
   cloudinaryUrl: process.env.CLOUDINARY_URL || 'cloudinary://api_key:api_secret@cloud_name'
 }
