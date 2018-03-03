@@ -95,16 +95,16 @@ const socialLinks = ({
   twitterUrl
 }) => [
   facebookUrl
-    ? { label: 'Facebook', icon: 'icon__facebook', url: facebookUrl }
+    ? { label: 'Facebook', icon: 'facebook', url: facebookUrl }
     : undefined,
   instagramUrl
-    ? { label: 'Instagram', icon: 'icon__instagram', url: instagramUrl }
+    ? { label: 'Instagram', icon: 'instagram', url: instagramUrl }
     : undefined,
   youtubeUrl
-    ? { label: 'Youtube', icon: 'icon__youtube', url: youtubeUrl }
+    ? { label: 'Youtube', icon: 'youtube', url: youtubeUrl }
     : undefined,
   twitterUrl
-    ? { label: 'Twitter', icon: 'icon__twitter', url: twitterUrl }
+    ? { label: 'Twitter', icon: 'twitter', url: twitterUrl }
     : undefined
 ].filter(isDefined)
 
