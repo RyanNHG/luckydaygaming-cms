@@ -31,8 +31,10 @@ const getNextLandingPage = (name) =>
 
 const firstParagraph = (html) =>
   html
-    .split('<p>').join('')
-    .split('</p>')[0]
+    ? html
+        .split('<p>').join('')
+        .split('</p>')[0]
+    : undefined
 
 const section = ({ baseUrl }) => ({ name, slug, intro }) => ({
   title: name,
