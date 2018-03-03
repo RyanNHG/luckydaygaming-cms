@@ -19,6 +19,13 @@ const requiredString = (label, default_) =>
     default: default_
   })
 
+const richText = (label, default_) => ({
+  type: Types.Html,
+  wysiwyg: true,
+  label,
+  default: default_
+})
+
 const requiredRichText = (label, default_) => ({
   type: Types.Html,
   wysiwyg: true,
@@ -32,9 +39,27 @@ const image = (label) => ({
   label
 })
 
+const notes = (default_) => ({
+  type: String,
+  label: 'Note:',
+  required: true,
+  noedit: true,
+  default: default_
+})
+
+const hidden = (value) => ({
+  type: String,
+  required: true,
+  hidden: true,
+  default: value
+})
+
 module.exports = {
   image,
   string,
   requiredString,
-  requiredRichText
+  richText,
+  requiredRichText,
+  notes,
+  hidden
 }

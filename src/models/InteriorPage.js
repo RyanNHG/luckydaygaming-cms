@@ -1,5 +1,6 @@
 const keystone = require('keystone')
 const { List } = keystone
+const { richText } = require('./_fields')
 
 const pages = [
   { name: 'OurCompanyInteriorPage' },
@@ -16,6 +17,10 @@ const createModel = ({ name }) => {
 
   Model.add({
     name: { type: String, required: true, initial: true }
+  })
+
+  Model.add({
+    intro: richText('Intro')
   })
 
   Model.register()
