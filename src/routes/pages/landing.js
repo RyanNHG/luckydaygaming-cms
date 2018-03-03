@@ -39,7 +39,10 @@ const firstParagraph = (html) =>
 const section = ({ baseUrl }) => ({ name, slug, intro }) => ({
   title: name,
   description: intro,
-  image: undefined,
+  image: {
+    url: `/images${baseUrl}/${slug}.jpg`,
+    alt: `The image for ${name}.`
+  },
   link: {
     label: 'Learn more',
     url: `${baseUrl}/${slug}`
