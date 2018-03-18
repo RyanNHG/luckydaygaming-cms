@@ -1,10 +1,15 @@
 const keystone = require('keystone')
 const Page = require('./Page')
-const { range } = require('../utils')
-const { richText, string, repeatFields } = require('./_fields')
+const { richText, string, repeatableFields } = require('./_fields')
 const { interiorPages } = require('./_page-data')
 const { List } = keystone
 const { Types } = keystone.Field
+
+const pageTypes = {
+  RICH_TEXT: 'Rich Text',
+  VIDEO: 'Video',
+  LISTING: 'Listings'
+}
 
 const createModel = ({ name }) => {
   const Model = new List(name, {
@@ -20,6 +25,18 @@ const createModel = ({ name }) => {
     intro: richText('Excerpt')
   })
 
+  Model.add({
+    pageType: {
+      type: Types.Select,
+      options: Object.keys(pageTypes).map(key => pageTypes[key]),
+      default: pageTypes.RICH_TEXT,
+      initial: true,
+      required: true
+    }
+  })
+
+  Model.add(...sections.richText())
+  Model.add(...sections.videos())
   Model.add(...sections.listings({ maxSize: 10 }))
 
   Model.add(...relatedPages())
@@ -27,36 +44,55 @@ const createModel = ({ name }) => {
   Model.register()
 }
 
+const addPageTypeDependency = (pageType) =>
+  obj => obj.heading
+    ? { ...obj, dependsOn: obj.dependsOn || { pageType } }
+    : Object.keys(obj).reduce((newObj, key) => ({
+      ...newObj,
+      [key]: {
+        ...obj[key],
+        dependsOn: obj[key].dependsOn || { pageType }
+      }
+    }), {})
+
 const sections = {
 
   richText: () => [
-    'Rich Text Section', {
+    { heading: 'Rich Text Section' }, {
       richTextContent: richText('Content')
     }
-  ],
+  ].map(addPageTypeDependency(pageTypes.RICH_TEXT)),
 
-  listings: ({ maxSize }) => [
-    'Listings', {
-      listingCount: {
-        type: Types.Select,
-        options: range(0, maxSize).map(num => `${num}`)
-      }
+  listings: ({ maxSize }) => repeatableFields({
+    prefix: 'listings',
+    labels: {
+      singular: 'Listing',
+      plural: 'Listings'
     },
-    ...repeatFields({
-      listingImage: string('Image'),
-      listingTitle: string('Title'),
-      listingSubtitle: {
+    maxSize,
+    fields: {
+      image: string('Image'),
+      title: string('Title'),
+      subtitle: {
         label: 'Subtitle',
         type: String,
         collapse: true
       },
-      listingContent: richText('Content')
-    }, {
-      maxSize,
-      dependsOn: (num) => ({ listingCount: range(num + 1, maxSize).filter(a => a).map(num => `${num}`) }),
-      heading: (num) => `Listing ${num + 1}`
-    })
-  ]
+      content: richText('Content')
+    }
+  }).map(addPageTypeDependency(pageTypes.LISTING)),
+
+  videos: () => [
+    { heading: 'Video Section' }, {
+      videosTitle: string('Title'),
+      videosIntro: richText('Intro'),
+      videoLinks: {
+        label: 'Youtube Links',
+        type: Types.TextArray,
+        note: 'Please paste Youtube links here.'
+      }
+    }
+  ].map(addPageTypeDependency(pageTypes.VIDEO))
 
 }
 

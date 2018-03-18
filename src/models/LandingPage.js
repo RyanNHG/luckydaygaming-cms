@@ -1,8 +1,8 @@
 const keystone = require('keystone')
 const { List } = keystone
-const { image, requiredString, requiredRichText, notes } = require('./_fields')
 const Page = require('./Page')
-const { landingPages: pages } = require('./_page-data')
+const { image, requiredString, requiredRichText, notes } = require('./_fields')
+const { landingPages } = require('./_page-data')
 
 const createModel = ({ name, label, defaults: { title, intro, sectionUrl } }) => {
   const Model = new List(`${name}LandingPage`, {
@@ -12,6 +12,8 @@ const createModel = ({ name, label, defaults: { title, intro, sectionUrl } }) =>
     label: label || 'Landing Page',
     autokey: { path: 'slug', from: 'name', unique: true }
   })
+
+  Model.add({ name: { type: String, default: title } })
 
   Model.add('Hero', {
     heroTitle: requiredString('Title', title),
@@ -33,4 +35,4 @@ const createModel = ({ name, label, defaults: { title, intro, sectionUrl } }) =>
   Model.register()
 }
 
-pages.forEach(createModel)
+landingPages.forEach(createModel)
