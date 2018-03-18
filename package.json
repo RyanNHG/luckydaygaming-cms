@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "connect-mongo": "^2.0.1",
-    "keystone": "^4.0.0-beta.8",
+    "keystone": "4.0.0-beta.5",
     "keystone-singleton": "git://github.com/onenorth/keystone-singleton.git#1.0.1"
   }
 }

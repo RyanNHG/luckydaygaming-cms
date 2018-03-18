@@ -10,6 +10,11 @@ const debug = (thing) => {
   return thing
 }
 
+const debugWithLabel = (label, thing) => {
+  console.log(label, thing)
+  return thing
+}
+
 const suffix = (obj, prop) => {
   let initial = { ...obj }
   delete initial[prop]
@@ -57,10 +62,18 @@ const next = (item, list) =>
     .map(({ index }) => (index + 1) % list.length)
     .reduce((_, index) => list[index], undefined)
 
+const range = (start, end) => {
+  let list = []
+  for (var i = start; i <= end; i++) list[i] = i
+  return list
+}
+
 module.exports = {
   debug,
+  debugWithLabel,
   sluggify,
   suffix,
   unsuffix,
-  next
+  next,
+  range
 }

@@ -1,58 +1,16 @@
 const keystone = require('keystone')
 const { List } = keystone
 const { image, requiredString, requiredRichText, notes } = require('./_fields')
-
-const pages = [
-  { name: 'OurCompany',
-    defaults: {
-      title: 'Our Company',
-      intro: '<p>We pride ourselves on delivering the best machines to our customers. Lucky Day Gaming works with and has maintained a long-standing relationship with Bally, IGT, WMS, and Spielo.</p>'
-    }
-  },
-  { name: 'Partnerships',
-    defaults: {
-      title: 'Partnerships',
-      intro: '<p>We pride ourselves on delivering the best machines to our customers. Lucky Day Gaming works with and has maintained a long-standing relationship with Bally, IGT, WMS, and Spielo.</p>'
-    }
-  },
-  { name: 'AboutGaming',
-    defaults: {
-      title: 'About Gaming',
-      intro: '<p>We pride ourselves on delivering the best machines to our customers. Lucky Day Gaming works with and has maintained a long-standing relationship with Bally, IGT, WMS, and Spielo.</p>'
-    }
-  },
-  { name: 'Locations',
-    label: 'Locations Page',
-    defaults: {
-      title: 'Locations',
-      intro: '<p>We pride ourselves on delivering the best machines to our customers. Lucky Day Gaming works with and has maintained a long-standing relationship with Bally, IGT, WMS, and Spielo.</p>'
-    }
-  },
-  { name: 'ContactUs',
-    label: 'Contact Us Page',
-    defaults: {
-      title: 'Contact Us',
-      intro: '<p>We pride ourselves on delivering the best machines to our customers. Lucky Day Gaming works with and has maintained a long-standing relationship with Bally, IGT, WMS, and Spielo.</p>'
-    }
-  },
-  { name: 'Faqs',
-    label: 'FAQs Page',
-    defaults: {
-      title: 'FAQs',
-      intro: '<p>We pride ourselves on delivering the best machines to our customers. Lucky Day Gaming works with and has maintained a long-standing relationship with Bally, IGT, WMS, and Spielo.</p>'
-    }
-  }
-]
+const Page = require('./Page')
+const { landingPages: pages } = require('./_page-data')
 
 const createModel = ({ name, label, defaults: { title, intro, sectionUrl } }) => {
   const Model = new List(`${name}LandingPage`, {
+    inherits: Page,
+    hidden: false,
     singleton: true,
     label: label || 'Landing Page',
     autokey: { path: 'slug', from: 'name', unique: true }
-  })
-
-  Model.add({
-    name: { type: String, required: true, default: title }
   })
 
   Model.add('Hero', {

@@ -3,6 +3,7 @@ services:
 
   cms:
     build: .
+    image: ryannhg/ldg-cms
     environment:
       - MONGO_URI=mongodb://db/lucky-day-gaming
       - COOKIE_SECRET=chocolate-chips-haha-get-it
@@ -10,7 +11,6 @@ services:
     volumes:
       - ./src:/usr/src/app/src
       - ./package.json:/usr/src/app/package.json
-      - ./package-lock.json:/usr/src/app/package-lock.json
     ports:
       - 3000:3000
 

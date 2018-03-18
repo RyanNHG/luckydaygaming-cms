@@ -1,5 +1,6 @@
 const keystone = require('keystone')
 const { Types } = keystone.Field
+const { range, debugWithLabel } = require('../utils')
 
 const _string = (config) => ({
   type: String,
@@ -54,6 +55,20 @@ const hidden = (value) => ({
   default: value
 })
 
+const repeatFields = (initialObject, { maxSize, dependsOn, heading }) =>
+  range(0, maxSize - 1)
+    .reduce((objectList, number) => [
+      ...objectList,
+      (heading
+          ? { heading: heading(number), dependsOn: debugWithLabel(heading(number), dependsOn(number)) }
+          : {}),
+      Object.keys(initialObject)
+          .reduce((obj, key) => ({
+            ...obj,
+            [key + number]: { ...initialObject[key], dependsOn: debugWithLabel(key, dependsOn(number)) }
+          }), {})
+    ], [])
+
 module.exports = {
   image,
   string,
@@ -61,5 +76,6 @@ module.exports = {
   richText,
   requiredRichText,
   notes,
-  hidden
+  hidden,
+  repeatFields
 }
