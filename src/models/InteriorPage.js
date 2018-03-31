@@ -31,7 +31,8 @@ const createModel = ({ name }) => {
       options: Object.keys(pageTypes).map(key => pageTypes[key]),
       default: pageTypes.RICH_TEXT,
       initial: true,
-      required: true
+      required: true,
+      hidden: true
     }
   })
 

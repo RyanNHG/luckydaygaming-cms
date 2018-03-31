@@ -40,9 +40,10 @@ const image = (label) => ({
   label
 })
 
-const notes = (default_) => ({
+const notes = (default_, note) => ({
   type: String,
   label: 'Note:',
+  note,
   required: true,
   noedit: true,
   default: default_

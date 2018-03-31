@@ -32,27 +32,32 @@ const alpha = (a, b) =>
     ? 1
     : 0
 
-const startsWith = (item) => (thing) =>
-  thing.indexOf(item) === 0
+const getIndexOfKey = (key) =>
+  parseInt(key.split('__')[2])
 
-const unsuffix = (prop) => (obj) => {
-  let initial = { ...obj }
+const getFieldKey = (key) =>
+  key.split('__')[1]
 
-  Object.keys(obj)
-    .filter(startsWith(prop))
-    .forEach(key => {
-      delete initial[key]
-    })
+const unsuffix = (prefix) => (obj) => {
+  const { newObj, list } = Object.keys(obj)
+    .reduce(({ newObj, list }, key) => {
+      const startsWithPrefix = key.indexOf(prefix) === 0
 
-  const list = Object.keys(obj)
-    .sort(alpha)
-    .reduce((list, key) =>
-      (startsWith(prop)(key))
-        ? list.concat(obj[key])
-        : list
-    , [])
+      if (key !== prefix + 'Count') {
+        if (startsWithPrefix) {
+          const index = getIndexOfKey(key)
+          const innerKey = getFieldKey(key)
+          list[index] = list[index] || {}
+          list[index][innerKey] = obj[key]
+        } else {
+          newObj[key] = obj[key]
+        }
+      }
 
-  return { ...initial, [prop]: list }
+      return { newObj, list }
+    }, { newObj: {}, list: [] })
+
+  return { ...newObj, [prefix]: list }
 }
 
 const next = (item, list) =>
@@ -68,6 +73,45 @@ const range = (start, end) => {
   return list
 }
 
+const firstParagraph = (html) =>
+  html
+    ? html
+        .split('<p>').join('')
+        .split('</p>')[0]
+    : undefined
+
+const prefixMap = {
+  OurCompany: '/our-company',
+  Partnerships: '/partnerships',
+  AboutGaming: '/about-gaming'
+}
+
+const pages = [
+  'OurCompany',
+  'Partnerships',
+  'AboutGaming'
+]
+
+const getNextLandingPage = (keystone, name) =>
+  keystone.list(`${next(name, pages)}LandingPage`).model
+    .findOne()
+    .select('name intro slug -_id')
+    .lean()
+    .exec()
+    .then(item => ({
+      ...item,
+      url: '/' + item.slug
+    }))
+
+const outro = ({ name, url, intro }) => ({
+  title: name,
+  description: intro,
+  link: {
+    label: 'Learn more',
+    url
+  }
+})
+
 module.exports = {
   debug,
   debugWithLabel,
@@ -75,5 +119,9 @@ module.exports = {
   suffix,
   unsuffix,
   next,
-  range
+  range,
+  getNextLandingPage,
+  prefixMap,
+  firstParagraph,
+  outro
 }

@@ -1,11 +1,5 @@
 const keystone = require('keystone')
-const { next } = require('../../utils')
-
-const pages = [
-  'OurCompany',
-  'Partnerships',
-  'AboutGaming'
-]
+const { getNextLandingPage, prefixMap, firstParagraph, outro } = require('../../utils')
 
 const getLandingPage = (listName) =>
   keystone.list(listName).model
@@ -13,6 +7,13 @@ const getLandingPage = (listName) =>
     .select('-_id -__v -nextPageNotes -pageSectionsNote -singleton__name')
     .lean()
     .exec()
+
+const hasDetailPages = (listName) =>
+  keystone.list(listName).model
+    .count()
+    .lean()
+    .exec()
+    .then(count => count > 0)
 
 const getDetailPages = (listName) =>
   keystone.list(listName).model
@@ -22,19 +23,24 @@ const getDetailPages = (listName) =>
     .lean()
     .exec()
 
-const getNextLandingPage = (name) =>
-  keystone.list(`${next(name, pages)}LandingPage`).model
+const getFirstDetailPage = (name) =>
+  keystone.list(`${name}InteriorPage`).model
     .findOne()
     .select('name intro slug -_id')
+    .sort('sortOrder')
     .lean()
     .exec()
+    .then(item => ({
+      ...item,
+      url: prefixMap[name] + '/' + item.slug
+    }))
 
-const firstParagraph = (html) =>
-  html
-    ? html
-        .split('<p>').join('')
-        .split('</p>')[0]
-    : undefined
+const getNextPage = (name) =>
+  hasDetailPages(`${name}LandingPage`)
+    .then(hasDetailPages => hasDetailPages
+      ? getFirstDetailPage(name)
+      : getNextLandingPage(keystone, name)
+    )
 
 const section = ({ baseUrl }) => ({ name, slug, intro }) => ({
   title: name,
@@ -49,16 +55,7 @@ const section = ({ baseUrl }) => ({ name, slug, intro }) => ({
   }
 })
 
-const outro = ({ name, slug, intro }) => ({
-  title: name,
-  description: intro,
-  link: {
-    label: 'Learn more',
-    url: `/${slug}`
-  }
-})
-
-const transform = ([ landing, details, next ]) => ({
+const transform = ([ landing, details, nextPage ]) => ({
   meta: {
     title: landing.name,
     description: firstParagraph(landing.intro)
@@ -72,14 +69,14 @@ const transform = ([ landing, details, next ]) => ({
   },
   intro: landing.intro,
   sections: details.map(section({ baseUrl: `/${landing.slug}` })),
-  outro: outro(next)
+  outro: outro(nextPage)
 })
 
 module.exports = ({ name }) => (req, res, next) =>
   Promise.all([
     getLandingPage(`${name}LandingPage`),
     getDetailPages(`${name}InteriorPage`),
-    getNextLandingPage(name)
+    getNextPage(name)
   ])
     .then(transform)
     .then(data => res.json(data))
